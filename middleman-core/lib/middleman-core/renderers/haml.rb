@@ -51,9 +51,9 @@ module Middleman
 		  f.class_exec do
 		    def self.render_with_options(text, compiler_options)
 		      modified_options = options.dup
-		      modified_options[:context] = @@app
-			  
-		      text = template_class.new(nil, 1, modified_options) { text }.render
+              modified_options[:context] = (compiler_options[:context] == false) ? @@app : compiler_options[:context]
+			  ctx = Middleman::TemplateContext.new(@@app)
+              text = template_class.new(nil, 1, modified_options) { text }.render(ctx)
 		      super(text, compiler_options)
 		    end
 		  end
