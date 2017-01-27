@@ -8,6 +8,10 @@ module Middleman
       ::Middleman::Sources.file_cache[full_path] ||= {}
       ::Middleman::Sources.file_cache[full_path][version] ||= ::File.read(full_path)
     end
+
+    def normalized_relative_path
+      @normalized_relative_path ||= ::Middleman::Util.normalize_path relative_path.to_s
+    end
   end
 
   # Sources handle multiple on-disk collections of files which make up
@@ -52,14 +56,12 @@ module Middleman
     # @param [Hash] options Global options.
     # @param [Array] watchers Default watchers.
     Contract IsA['Middleman::Application'], Maybe[Hash], Maybe[Array] => Any
-    def initialize(app, options={}, watchers=[])
+    def initialize(app, _options={}, watchers=[])
       @app = app
       @watchers = watchers
       @sorted_watchers = @watchers.dup.freeze
 
       ::Middleman::Sources.file_cache = {}
-
-      @options = options
 
       # Set of procs wanting to be notified of changes
       @on_change_callbacks = ::Hamster::Vector.empty
@@ -168,7 +170,7 @@ module Middleman
     # @return [Middleman::Sources]
     Contract Symbol => ::Middleman::Sources
     def by_type(type)
-      self.class.new @app, @options, watchers.select { |d| d.type == type }
+      self.class.new @app, nil, watchers.select { |d| d.type == type }
     end
 
     # Get all files for this collection of watchers.

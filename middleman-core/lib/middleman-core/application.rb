@@ -191,9 +191,9 @@ module Middleman
         ignored
       end,
 
-      layout: proc do |file, app|
+      layout: ->(file, app) {
         file[:relative_path].to_s.start_with?('layout.', app.config[:layouts_dir] + '/')
-      end
+      }
     }, 'Callbacks that can exclude paths from the sitemap'
 
     define_setting :skip_build_clean, proc { |p| [/\.git/].any? { |r| p =~ r } }, 'Whether some paths should not be removed during a clean build.'
@@ -203,6 +203,7 @@ module Middleman
     define_setting :watcher_disable, false, 'If the Listen watcher should not run'
     define_setting :watcher_force_polling, false, 'If the Listen watcher should run in polling mode'
     define_setting :watcher_latency, nil, 'The Listen watcher latency'
+    define_setting :watcher_wait_for_delay, 0.5, 'The Listen watcher delay between calls when changes exist'
 
     # Delegate convenience methods off to their implementations
     def_delegator :"::Middleman::Logger", :singleton, :logger
@@ -344,11 +345,11 @@ module Middleman
 
     # Clean up missing Tilt exts
     def prune_tilt_templates!
-      ::Tilt.mappings.each_key do |key|
+      ::Tilt.default_mapping.lazy_map.each_key do |key|
         begin
           ::Tilt[".#{key}"]
         rescue LoadError, NameError
-          ::Tilt.mappings.delete(key)
+          ::Tilt.default_mapping.lazy_map.delete(key)
         end
       end
     end

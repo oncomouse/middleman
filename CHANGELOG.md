@@ -1,6 +1,30 @@
 master
 ===
 
+# 4.2.1
+
+* Fix some issues with Ruby 2.4.0
+
+# 4.2.0
+
+Fix #1951. A failed build would "clean" all files in build. Possibly breaking change, "clean" and "after_build" are only run for sucessful builds.
+
+# 4.1.14
+
+Fix #2019. Always logging boolean on starting up.
+
+# 4.1.13
+
+* Change how config options are passed to Thor. Removes new Thor warnings from #2017
+
+# 4.1.12
+
+* Fix broken `ignore { |p| true }` form.
+
+# 4.1.11
+
+* Upgrade to Rack 2.
+
 # 4.1.10
 
 * Fix unicode issues in URL deeplinks.

@@ -16,12 +16,12 @@ Gem::Specification.new do |s|
   s.files        = `git ls-files -z`.split("\0")
   s.test_files   = `git ls-files -z -- {fixtures,features}/*`.split("\0")
   s.require_path = 'lib'
-  s.required_ruby_version = '>= 2.0.0'
+  s.required_ruby_version = '>= 2.2.0'
 
   # Core
   s.add_dependency('bundler', ['~> 1.1'])
-  s.add_dependency('rack', ['>= 1.4.5', '< 2.0'])
-  s.add_dependency('tilt', ['~> 1.4.1'])
+  s.add_dependency('rack', ['>= 1.4.5', '< 3'])
+  s.add_dependency('tilt', ['~> 2.0'])
   s.add_dependency('erubis')
   s.add_dependency('fast_blank')
   s.add_dependency('parallel')
@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_dependency('dotenv')
 
   # Helpers
-  s.add_dependency('activesupport', ['~> 4.2'])
+  s.add_dependency('activesupport', ['>= 4.2', '< 5.1'])
   s.add_dependency('padrino-helpers', ['~> 0.13.0'])
   s.add_dependency("addressable", ["~> 2.3"])
   s.add_dependency('memoist', ['~> 0.14'])

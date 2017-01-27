@@ -73,12 +73,14 @@ module Middleman
 
       ::Middleman::Profiling.report('build')
 
-      ::Middleman::Util.instrument 'builder.clean' do
-        clean! if @cleaning
-      end
+      unless @has_error
+        ::Middleman::Util.instrument 'builder.clean' do
+          clean! if @cleaning
+        end
 
-      ::Middleman::Util.instrument 'builder.after' do
-        @app.execute_callbacks(:after_build, [self])
+        ::Middleman::Util.instrument 'builder.after' do
+          @app.execute_callbacks(:after_build, [self])
+        end
       end
 
       !@has_error
@@ -183,7 +185,7 @@ module Middleman
       file.binmode
       file.write(contents)
       file.close
-      File.chmod(0644, file)
+      File.chmod(0o644, file)
       file
     end
 

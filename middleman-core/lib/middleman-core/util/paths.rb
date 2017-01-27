@@ -1,7 +1,7 @@
 # Core Pathname library used for traversal
 require 'pathname'
 require 'uri'
-require 'addressable'
+require 'addressable/uri'
 require 'memoist'
 require 'tilt'
 
@@ -32,9 +32,9 @@ module Middleman
     # @return [String]
     Contract String => String
     def normalize_path(path)
-     # The tr call works around a bug in Ruby's Unicode handling
+      # The tr call works around a bug in Ruby's Unicode handling
       ::URI.decode(path).sub(%r{^/}, '').tr('', '')
-     end
+    end
     memoize :normalize_path
 
     # This is a separate method from normalize_path in case we
@@ -152,7 +152,8 @@ module Middleman
     def url_for(app, path_or_resource, options={})
       if path_or_resource.is_a?(String) || path_or_resource.is_a?(Symbol)
         r = app.sitemap.find_resource_by_page_id(path_or_resource)
-        path_or_resource = r if r
+
+        path_or_resource = r ? r : path_or_resource.to_s
       end
 
       # Handle Resources and other things which define their own url method

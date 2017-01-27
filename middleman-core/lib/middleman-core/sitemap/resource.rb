@@ -85,9 +85,9 @@ module Middleman
         file_descriptor && file_descriptor[:full_path].to_s
       end
 
-      Contract Or[Symbol, String, Fixnum]
+      Contract Or[Symbol, String, Integer]
       def page_id
-        metadata[:page][:id] || destination_path
+        metadata[:page][:id] || make_implicit_page_id(destination_path)
       end
 
       # Merge in new metadata specific to this resource.
@@ -197,10 +197,41 @@ module Middleman
         options[:content_type] || ::Rack::Mime.mime_type(ext, nil)
       end
 
+      # The normalized source path of this resource (relative to the source directory,
+      # without template extensions)
+      # @return [String]
+      def normalized_path
+        @normalized_path ||= ::Middleman::Util.normalize_path @path
+      end
+
       def to_s
         "#<#{self.class} path=#{@path}>"
       end
       alias inspect to_s # Ruby 2.0 calls inspect for NoMethodError instead of to_s
+
+      protected
+
+      # Makes a page id based on path (when not otherwise given)
+      #
+      # Removes .html extension and potential leading slashes or dots
+      # eg. "foo/bar/baz.foo.html" => "foo/bar/baz.foo"
+      Contract String => String
+      def make_implicit_page_id(path)
+        @id ||= begin
+          if prok = @app.config[:page_id_generator]
+            return prok.call(path)
+          end
+
+          basename = if ext == '.html'
+            File.basename(path, ext)
+          else
+            File.basename(path)
+                     end
+
+          # Remove leading dot or slash if present
+          File.join(File.dirname(path), basename).gsub(/^\.?\//, '')
+        end
+      end
     end
 
     class StringResource < Resource
